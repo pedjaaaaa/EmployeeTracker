@@ -1,45 +1,39 @@
+DROP DATABASE IF EXISTS employeetracker_db;
+
 CREATE DATABASE employeetracker_db;
+
 USE employeetracker_db;
 
--- Create the table actors.
 CREATE TABLE department (
   id int AUTO_INCREMENT,
   name varchar(30) NOT NULL,
-  coolness_points int NOT NULL,
-  attitude varchar(60) NOT NULL,
   PRIMARY KEY(id)
 );
-
--- * **department**:
---   * **id** - INT PRIMARY KEY
---   * **name** - VARCHAR(30) to hold department name
 
 CREATE TABLE roles (
   id int AUTO_INCREMENT,
-  name varchar(30) NOT NULL,
-  coolness_points int NOT NULL,
-  attitude varchar(60) NOT NULL,
-  PRIMARY KEY(id)
+  title varchar(30) NOT NULL,
+  salary DECIMAL NOT NULL,
+  department_id int NOT NULL,
+  FOREIGN KEY (department_id)
+    REFERENCES department(id),
+  PRIMARY KEY(id) 
 );
 
--- * **role**:
---   * **id** - INT PRIMARY KEY
---   * **title** -  VARCHAR(30) to hold role title
---   * **salary** -  DECIMAL to hold role salary
---   * **department_id** -  INT to hold reference to department role belongs to
-
-CREATE TABLE employee (
+CREATE TABLE employees (
   id int AUTO_INCREMENT,
-  name varchar(30) NOT NULL,
-  coolness_points int NOT NULL,
-  attitude varchar(60) NOT NULL,
-  PRIMARY KEY(id)
+  first_name varchar(30) NOT NULL,
+  last_name varchar(30) NOT NULL,
+  role_id INT NOT NULL,
+  manager_id INT,
+  PRIMARY KEY(id),
+  FOREIGN KEY (role_id)
+    REFERENCES roles(id),
+  FOREIGN KEY (manager_id)
+    REFERENCES employees(id),
 );
 
--- * **employee**:
---   * **id** - INT PRIMARY KEY
---   * **first_name** - VARCHAR(30) to hold employee first name
---   * **last_name** - VARCHAR(30) to hold employee last name
---   * **role_id** - INT to hold reference to role employee has
---   * **manager_id** - INT to hold reference to another employee that manager of the current employee. 
---   This field may be null if the employee has no manager
+
+INSERT INTO employees (first_name, last_name) VALUES ('John Doe'), ('Mike Chan'), ('Ashley Rodriguez'), ('Kevin Tupik'), ('Malia Brown'), ('Sarah Lourd'), ('Tom Allen'), ('Tammer Galal');
+INSERT INTO department (name) VALUES ('Sales'), ('Engineering'), ('Finance'), ('Legal');
+INSERT INTO roles (title, salary) VALUES ('Sales Lead', 100,000), ('Salesperson', 80,000), ('Lead Engineer', 150,000), ('Software Engineer', 120,000), ('Accountant', 125,000), ('Legal Team Lead', 250,000), ('Lawyer', 190,000);
