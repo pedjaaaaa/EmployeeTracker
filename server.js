@@ -1,78 +1,100 @@
-const mysql = require("mysql");
-const inquirer = require("inquirer");
-const consoleTable = require("console.table");
-const chalk = require("chalk");
-const figlet = require("figlet");
-const boxen = require("boxen");
-const questions = require("./Questions");
+var inquirer = require("inquirer");
+var orm = require("./dataPull");
 
-//  Add departments, roles, employees
-//  View departments, roles, employees
-//  Update employee roles
 
-console.log(
-    boxen(chalk.cyan(figlet.textSync('Employee' + '\n' + 'Manager', { horizontalLayout: 'full' }))
-    ));
-
-start();
+start();  // start manipulating team!!!!
 
 function start() {
-    inquirer
-        .prompt([{
-            message: 'What would you like to do?',
-            name: "initQuestion",
-            type: 'list',
-            choices: [
-                "View All Employees", "View All Employees by Department", "View All Employees by Manager", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "View Total Utilized Budget", "End"
-            ]
-        }])
-        .then(answer => {
-            if (answer.initQuestion === "View All Employees") {
-                console.log("Viewing All Employees");
-
-            } else if (answer.initQuestion === "View All Employees by Department") {
-                console.log("Viewing All Employees by Department");
-
-            } else if (answer.initQuestion === "View All Employees by Manager") {
-                console.log("Viewing All Employees by Manager");
-
-            } else if (answer.initQuestion === "Add Employee") {
-                inquirer.prompt(addingEmployee)
-                    .then(function (data) {
-                        console.log(data);
-                        console.log(:"Added Employee");
-
-                    }, function (error) {
-                        console.log(error);
-                    })
-
-            } else if (answer.initQuestion === "Update Employee Role") {
-                console.log("Updating Employee Role");
-
-            } else if (answer.initQuestion === "View All Roles") {
-                console.log("Viewing All Roles");
-
-            } else if (answer.initQuestion === "Add Role") {
-                console.log("Adding Role");
-
-            } else if (answer.initQuestion === "View All Departments") {
-                console.log("Viewing Department");
-
-            } else if (answer.initQuestion === "Add Department") {
-                console.log("Adding Department");
-
-            } else if (answer.initQuestion === "View Total Utilized Budget") {
-                console.log("Viewing Budget");
-
-            } else if (answer.initQuestion === "End") {
-                console.log("Ending");
+    inquirer.prompt({
+        type: "list",
+        message: "What do you want to do?",
+        name: "action",
+        choices: [
+            "View all the employees",
+            "View all the employees by department",
+            "View all the employees by manager",
+            "Add Employee",
+            "Remove Employee",
+            "Update Employee Role",
+            "Update Employee Manager",
+            "View utilized budget by department",
+            "End"
+        ]
+    })
+        .then(function (userAns) {
+            let userAction = userAns.action;
+            switch (userAction) {
+                case ("View all the employees"):
+                    viewEmployee();
+                    break;
+                case ("View all the employees by department"):
+                    viewEmployeeByDept();
+                    break;
+                case ("View all the employees by manager"):
+                    viewEmployeeByManager();
+                    break;
+                case ("Add Employee"):
+                    addEmployee();
+                    break;
+                case ("Remove Employee"):
+                    removeEmployee();
+                    break;
+                case ("Update Employee Role"):
+                    updateRole();
+                    break;
+                case ("Update Employee Manager"):
+                    updateManager();
+                    break;
+                case ("View utilized budget by department"):
+                    viewBudget();
+                    break;
+                default:
+                    orm.finish();
             }
-        })
-};
-// * Add departments, roles, employees
-// * View departments, roles, employees
-// * Update employee roles
-// * Update employee managers
-// * View employees by manager
-// * Delete departments, roles, and employees
-// * View the total utilized budget of a department -- ie the combined salaries of all employees in that department
+        });
+}
+
+
+function viewEmployee() {
+    orm.viewEmployDetail(start);
+}
+
+
+async function viewEmployeeByDept() {
+    let listDept = await orm.getListOfDept();
+    orm.viewEmployeeByDept(start, listDept);
+}
+
+async function viewEmployeeByManager() {
+    let listManager = await orm.getListOfManager();
+    orm.viewEmployeeByManager(start, listManager);
+}
+
+
+async function addEmployee() {
+    let listRole = await orm.getListOfRole();
+    let listName = await orm.getListOfAllName();
+    orm.addEmployee(start, listRole, listName);
+}
+
+async function removeEmployee() {
+    let listName = await orm.getListOfAllName();
+    orm.removeAndUpdate(start, listName);
+}
+
+async function updateRole() {
+    let listRole = await orm.getListOfRole();
+    let listName = await orm.getListOfAllName();
+    orm.updateRole(start, listName, listRole);
+}
+
+
+async function updateManager() {
+    let listName = await orm.getListOfAllName();
+    orm.updateManager(start,listName);
+}
+
+async function viewBudget () {
+    let listDept = await orm.getListOfDept();
+    orm.viewDepartBudget(start, listDept);
+}
