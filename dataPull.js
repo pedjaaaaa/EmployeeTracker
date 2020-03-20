@@ -18,7 +18,6 @@ var orm = {
         });
     },
 
-
     // A list of name of role
     getListOfRole() {
         return new Promise(resolve => {
@@ -93,7 +92,7 @@ var orm = {
     },
 
     // View employee deatailed information as above by under selected current manager
-    viewEmployeeByManager(cb, listManager) {    //with manager himself
+    viewEmployeeByManager(cb, listManager) { 
         inquirer.prompt({
             type: "list",
             name: "manager",

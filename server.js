@@ -2,7 +2,7 @@ var inquirer = require("inquirer");
 var orm = require("./dataPull");
 
 
-start();  // start manipulating team!!!!
+start(); 
 
 function start() {
     inquirer.prompt({
